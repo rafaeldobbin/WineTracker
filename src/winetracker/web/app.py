@@ -173,4 +173,10 @@ app = create_dash_app()
 server = app.server
 
 if __name__ == "__main__":
-    app.run(debug=get_settings().env == "development", port=int(os.environ.get("PORT", "8052")))
+    app.run(
+        debug=get_settings().env == "development",
+        port=int(os.environ.get("PORT", "8052")),
+        # Only our own code should trigger a restart. Library files under .venv get
+        # touched by OneDrive sync, which would otherwise cause endless reloads.
+        exclude_patterns=["*site-packages*", "*.venv*"],
+    )

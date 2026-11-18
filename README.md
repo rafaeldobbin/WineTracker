@@ -11,12 +11,17 @@ See [docs/PLAN.md](docs/PLAN.md) for product decisions, architecture and roadmap
 
 ## Getting started
 
-```bash
-python -m venv .venv
-.venv/Scripts/activate          # Windows; use .venv/bin/activate on macOS/Linux
+Keep the virtual environment **outside** any synced folder (OneDrive, Dropbox):
+syncing its ~15,000 library files is slow and makes the dev servers reload constantly.
+
+```powershell
+python -m venv $HOME\.venvs\winetracker
+& $HOME\.venvs\winetracker\Scripts\Activate.ps1   # macOS/Linux: source ~/.venvs/winetracker/bin/activate
 pip install -e ".[dev]"
-cp .env.example .env            # then set WT_DATABASE_URL and the two secrets
+copy .env.example .env          # then set WT_DATABASE_URL and the two secrets
 ```
+
+The commands below assume the environment is activated (your prompt starts with `(winetracker)`).
 
 Create the database on your MySQL instance, then apply migrations:
 
@@ -31,7 +36,7 @@ alembic upgrade head
 Run the API and the web UI in two terminals:
 
 ```bash
-uvicorn winetracker.api.main:app --reload --port 8000
+uvicorn winetracker.api.main:app --reload --reload-dir src --port 8000
 python -m winetracker.web.app   # http://127.0.0.1:8052
 ```
 
