@@ -173,4 +173,4 @@ app = create_dash_app()
 server = app.server
 
 if __name__ == "__main__":
-    app.run(debug=get_settings().env == "development", port=int(os.environ.get("PORT", "8050")))
+    app.run(debug=get_settings().env == "development", port=int(os.environ.get("PORT", "8052")))

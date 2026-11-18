@@ -32,7 +32,7 @@ Run the API and the web UI in two terminals:
 
 ```bash
 uvicorn winetracker.api.main:app --reload --port 8000
-python -m winetracker.web.app   # http://127.0.0.1:8050
+python -m winetracker.web.app   # http://127.0.0.1:8052
 ```
 
 API docs: http://127.0.0.1:8000/docs (disabled in production).

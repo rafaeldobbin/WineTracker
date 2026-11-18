@@ -24,7 +24,7 @@ class Settings(BaseSettings):
     api_base_url: str = "http://127.0.0.1:8000"
     # Signs the web UI's HttpOnly session cookie (which holds the API tokens).
     web_session_secret: SecretStr = SecretStr("dev-only-insecure-web-secret-change-me-0123")
-    cors_origins: list[str] = Field(default_factory=lambda: ["http://127.0.0.1:8050"])
+    cors_origins: list[str] = Field(default_factory=lambda: ["http://127.0.0.1:8052"])
 
     default_locale: Literal["en", "pt-BR"] = "en"
 
