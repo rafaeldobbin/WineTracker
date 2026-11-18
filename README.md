@@ -36,7 +36,7 @@ alembic upgrade head
 Run the API and the web UI in two terminals:
 
 ```bash
-uvicorn winetracker.api.main:app --reload --reload-dir src --port 8000
+python -m winetracker.api        # http://127.0.0.1:8000
 python -m winetracker.web.app   # http://127.0.0.1:8052
 ```
 
