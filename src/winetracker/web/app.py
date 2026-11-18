@@ -50,7 +50,7 @@ THEME = {
     },
 }
 
-NAV_ITEMS = [("/", "nav.cellar"), ("/you", "nav.you")]  # Occasions/Friends arrive in phases 3-4
+NAV_ITEMS = [("/", "nav.cellar"), ("/occasions", "nav.occasions"), ("/you", "nav.you")]
 # Pages that belong to the Cellar section, so its tab stays highlighted there.
 CELLAR_PREFIXES = ("/wines/", "/bottles/", "/add-wine")
 
@@ -62,8 +62,13 @@ DAYJS_LOCALES = [
 ]
 
 
+OCCASION_PREFIXES = ("/occasions", "/record-occasion")
+
+
 def nav_section(pathname: str | None) -> str:
     path = pathname or "/"
+    if path.startswith(OCCASION_PREFIXES):
+        return "/occasions"
     return "/" if path.startswith(CELLAR_PREFIXES) else path
 
 
@@ -87,6 +92,9 @@ def create_dash_app() -> dash.Dash:
     server = app.server
     server.secret_key = settings.web_session_secret.get_secret_value()
     server.config.update(
+        # A specific name: browsers share cookies across localhost ports, so the default
+        # "session" would collide with any other Flask app running locally.
+        SESSION_COOKIE_NAME="winetracker_session",
         SESSION_COOKIE_HTTPONLY=True,
         SESSION_COOKIE_SAMESITE="Lax",
         SESSION_COOKIE_SECURE=settings.env == "production",

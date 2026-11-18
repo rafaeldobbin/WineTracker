@@ -24,6 +24,7 @@ from winetracker.web.session import current_locale, current_user
 
 dash.register_page(
     __name__,
+    order=12,
     path_template="/bottles/<bottle_id>/edit",
     title=lambda **_: page_title("bottle.edit.title"),
 )

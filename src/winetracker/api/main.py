@@ -13,7 +13,7 @@ from fastapi.responses import JSONResponse
 from sqlalchemy import text
 
 from winetracker import __version__
-from winetracker.api.routers import auth, cellar, lookups
+from winetracker.api.routers import auth, cellar, lookups, occasions
 from winetracker.config import Settings, get_settings
 from winetracker.db import get_engine
 from winetracker.services.errors import DomainError
@@ -47,7 +47,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             conn.execute(text("SELECT 1"))
         return {"status": "ok", "version": __version__}
 
-    for router in (auth.router, lookups.router, cellar.router):
+    for router in (auth.router, lookups.router, cellar.router, occasions.router):
         app.include_router(router, prefix="/api/v1")
     return app
 

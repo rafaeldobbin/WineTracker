@@ -50,7 +50,7 @@ Mobile (later)┘
 
 1. ✅ **Foundation** — repo, config, DB layer, full schema + migration, email/password auth, Dash shell, i18n, glass rating component, CI.
 2. ✅ **Cellar** — wines (blends, producer/region/country), bottles (bulk add, status, drinking window, store, location), seeded grapes/regions, search and filters, grouped bottle table.
-3. **Occasions & ratings** — "open a bottle" flow, history, perception-vs-experience view.
+3. ✅ **Occasions & ratings** — occasions (when, where, who, food, notes), several wines each with its own rating pre-filled from the general rating, "Open a bottle" from the cellar, bottles return to the cellar when removed or the occasion is deleted, tastings per wine with perception-vs-experience.
 4. **Friends** — invitations, requests, visibility rules, friends feed, Google/Apple sign-in.
 5. **Polish** — dashboard/stats, PWA install, accessibility audit (axe).
 6. **Barcode** — browser camera scanning (ZXing), lookup, quick add.

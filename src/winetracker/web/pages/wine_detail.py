@@ -13,6 +13,7 @@ from winetracker.domain.countries import country_name
 from winetracker.domain.rating import Rating
 from winetracker.web import api_client
 from winetracker.web.components.glass_rating import glass_row
+from winetracker.web.components.occasion_view import delta_text
 from winetracker.web.components.wine_lookup import fetch_wine, not_found
 from winetracker.web.i18n import format_date, format_money, format_score, page_title, t
 from winetracker.web.session import current_locale, current_user
@@ -23,7 +24,7 @@ def _title(wine_id: str = "", **_: object) -> str:
     return f"{w['nickname']} · {t('app.name')}" if w else page_title("cellar.title")
 
 
-dash.register_page(__name__, path_template="/wines/<wine_id>", title=_title)
+dash.register_page(__name__, order=50, path_template="/wines/<wine_id>", title=_title)
 
 
 def layout(wine_id: str = "", **_: object) -> Any:
@@ -81,9 +82,20 @@ def layout(wine_id: str = "", **_: object) -> Any:
                 className="wt-actions",
                 children=[
                     dcc.Link(
+                        t("wine.open_bottle", loc),
+                        href=f"/record-occasion?bottle={in_cellar[0]['id']}",
+                        className="wt-button",
+                    )
+                    if in_cellar
+                    else dcc.Link(
+                        t("wine.record_tasting", loc),
+                        href=f"/record-occasion?wine={w['id']}",
+                        className="wt-button",
+                    ),
+                    dcc.Link(
                         t("bottles.add", loc),
                         href=f"/wines/{w['id']}/bottles/new",
-                        className="wt-button",
+                        className="wt-button wt-button--outline",
                     ),
                     dcc.Link(
                         t("wine.edit", loc),
@@ -131,6 +143,7 @@ def layout(wine_id: str = "", **_: object) -> Any:
             )
             if gone
             else None,
+            tastings_section(w, loc),
             html.Div(
                 className="wt-danger-zone",
                 children=[
@@ -212,6 +225,14 @@ def bottle_table(bottles: list[dict[str, Any]], name: str, loc: Any) -> html.Div
     rows = []
     for b, qty in group_bottles(bottles):
         vintage = str(b["vintage"] or t("cellar.nv", loc))
+        open_link = (
+            dcc.Link(
+                [t("col.actions.open", loc), html.Span(f" ({vintage})", className="wt-sr-only")],
+                href=f"/record-occasion?bottle={b['id']}",
+            )
+            if b["status"] == "in_cellar"
+            else None
+        )
         edit = (
             dcc.Link(
                 [
@@ -234,7 +255,7 @@ def bottle_table(bottles: list[dict[str, Any]], name: str, loc: Any) -> html.Div
                     html.Td(b["cellar_location"] or ""),
                     html.Td(window(b)),
                     html.Td(t(f"status.{b['status']}", loc)),
-                    html.Td(edit),
+                    html.Td(html.Span([open_link, edit], className="wt-table-actions")),
                 ]
             )
         )
@@ -282,3 +303,82 @@ def _delete(n, wine_id):  # type: ignore[no-untyped-def]
     except api_client.ApiError as err:
         return t(err.code, current_locale()), False, no_update
     return "", False, "/"
+
+
+def tastings_section(w: dict[str, Any], loc: Any) -> html.Section:
+    """Every time this wine was drunk, with how that bottle compared to the general rating."""
+    try:
+        tastings = api_client.get(f"/wines/{w['id']}/tastings")
+    except api_client.ApiError:
+        tastings = []
+    general = w["general_rating"]
+    rated = [x["rating"] for x in tastings if x["rating"] is not None]
+    summary = None
+    if rated:
+        avg = round(sum(rated) / len(rated) * 2) / 2  # nearest half glass
+        text = (
+            t(
+                "wine.tastings.average",
+                loc,
+                avg=format_score(avg, loc),
+                general=format_score(general, loc),
+            )
+            if general is not None
+            else t("wine.tastings.average_only", loc, avg=format_score(avg, loc))
+        )
+        summary = html.P(text, className="wt-lead")
+    rows = [
+        html.Tr(
+            [
+                html.Th(
+                    dcc.Link(
+                        format_date(x["occurred_on"], loc), href=f"/occasions/{x['occasion_id']}"
+                    ),
+                    scope="row",
+                ),
+                html.Td(
+                    ", ".join(
+                        p
+                        for p in (
+                            x["place_name"] or t(f"meal.{x['meal_time']}", loc),
+                            x["city"] or "",
+                        )
+                        if p
+                    )
+                ),
+                html.Td(str(x["vintage"] or "")),
+                html.Td(
+                    glass_row(Rating.from_score(x["rating"]), loc, size="sm")
+                    if x["rating"] is not None
+                    else t("wine.not_rated", loc)
+                ),
+                html.Td(delta_text(x["rating"], general, loc)),
+            ]
+        )
+        for x in tastings
+    ]
+    head = ["col.date", "col.where", "col.vintage", "col.rating", "col.difference"]
+    body = (
+        html.Div(
+            className="wt-table-wrap",
+            tabIndex="0",
+            **{"role": "region", "aria-labelledby": "wine-tastings"},
+            children=html.Table(
+                className="wt-table",
+                children=[
+                    html.Thead(html.Tr([html.Th(t(h, loc), scope="col") for h in head])),
+                    html.Tbody(rows),
+                ],
+            ),
+        )
+        if tastings
+        else html.P(t("wine.tastings.none", loc), className="wt-muted")
+    )
+    return html.Section(
+        **{"aria-labelledby": "wine-tastings"},
+        children=[
+            html.H2(t("wine.tastings", loc, count=len(tastings)), id="wine-tastings"),
+            summary,
+            body,
+        ],
+    )
