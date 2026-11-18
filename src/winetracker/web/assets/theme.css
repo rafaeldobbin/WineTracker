@@ -1,0 +1,190 @@
+/* WineTracker design tokens & layout.
+   Palette: limewash / garnet-ink / garnet / slate / moss. Type: Gloock (labels) + Public Sans. */
+
+:root {
+  --wt-limewash: #ECEEF1;
+  --wt-surface: #F8F9FA;
+  --wt-ink: #2B1420;
+  --wt-garnet: #7A1F3D;
+  --wt-garnet-soft: #E9D3DA;
+  --wt-slate: #56606B;
+  --wt-moss: #3E6A4D;
+  --wt-rule: #CDD2D8;
+  --wt-glass-line: var(--wt-ink);
+  --wt-wine: var(--wt-garnet);
+  --wt-focus: #1D5FD1;
+
+  --wt-font-label: "Gloock", "Georgia", serif;
+  --wt-font-text: "Public Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  /* Modular scale, ratio 1.25 from 16px */
+  --wt-size-sm: 0.875rem;
+  --wt-size-md: 1rem;
+  --wt-size-lg: 1.25rem;
+  --wt-size-xl: 1.563rem;
+  --wt-size-2xl: 1.953rem;
+  --wt-size-3xl: 2.441rem;
+
+  --wt-measure: 38rem;
+  --wt-rail: 13rem;
+  --wt-tabbar: 4rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --wt-limewash: #1B1419;
+    --wt-surface: #241B21;
+    --wt-ink: #EFE7EB;
+    --wt-garnet: #E58AA6;
+    --wt-garnet-soft: #4A2533;
+    --wt-slate: #B3A9AF;
+    --wt-moss: #8CC29E;
+    --wt-rule: #3D3139;
+    --wt-focus: #8AB4FF;
+  }
+}
+
+html, body {
+  margin: 0;
+  background: var(--wt-limewash);
+  color: var(--wt-ink);
+  font-family: var(--wt-font-text);
+  font-size: 100%;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3 {
+  font-family: var(--wt-font-label);
+  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: 0.005em;
+  margin: 0 0 0.5em;
+}
+h1 { font-size: var(--wt-size-3xl); }
+h2 { font-size: var(--wt-size-xl); }
+p { max-width: var(--wt-measure); margin: 0 0 1em; }
+a { color: var(--wt-garnet); text-underline-offset: 0.18em; }
+
+:focus-visible {
+  outline: 3px solid var(--wt-focus);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+.wt-sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+.wt-skip {
+  position: absolute; left: 1rem; top: -4rem; z-index: 1000;
+  background: var(--wt-ink); color: var(--wt-limewash);
+  padding: 0.6rem 1rem; text-decoration: none;
+}
+.wt-skip:focus { top: 1rem; }
+
+/* ---------- Shell ---------- */
+.wt-header {
+  display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+  padding: 0.9rem 1rem;
+  border-bottom: 1px solid var(--wt-rule);
+}
+.wt-wordmark {
+  font-family: var(--wt-font-label);
+  font-size: var(--wt-size-lg);
+  color: var(--wt-ink);
+  text-decoration: none;
+}
+.wt-body { display: block; }
+.wt-main { padding: 1.5rem 1rem calc(var(--wt-tabbar) + 2rem); max-width: 60rem; }
+.wt-main:focus { outline: none; }
+
+.wt-nav {
+  position: fixed; inset: auto 0 0 0; height: var(--wt-tabbar);
+  display: flex; background: var(--wt-surface);
+  border-top: 1px solid var(--wt-rule);
+}
+.wt-nav a {
+  flex: 1; display: flex; align-items: center; justify-content: center;
+  color: var(--wt-slate); text-decoration: none; font-size: var(--wt-size-sm); font-weight: 600;
+  min-height: 44px;
+}
+.wt-nav a.is-current { color: var(--wt-garnet); box-shadow: inset 0 3px 0 var(--wt-garnet); }
+
+@media (min-width: 48rem) {
+  .wt-header { padding: 1rem 2rem; }
+  .wt-body { display: grid; grid-template-columns: var(--wt-rail) 1fr; }
+  .wt-body--public { display: block; }
+  .wt-main { padding: 2.5rem 3rem; }
+  .wt-nav {
+    position: sticky; top: 0; height: auto; align-self: start;
+    flex-direction: column; background: transparent; border: 0; padding: 2rem 0 0 1rem;
+  }
+  .wt-nav a { justify-content: flex-start; padding: 0.55rem 1rem; font-size: var(--wt-size-md); }
+  .wt-nav a.is-current { box-shadow: inset 3px 0 0 var(--wt-garnet); }
+}
+
+/* Author display rules would otherwise override the hidden attribute. */
+[hidden] { display: none !important; }
+
+/* ---------- Auth ---------- */
+.wt-auth { max-width: 24rem; margin: 2rem auto 0; }
+.wt-auth h1 { font-size: var(--wt-size-2xl); }
+.wt-auth form { display: grid; gap: 1rem; margin: 1.5rem 0; }
+.wt-auth .wt-glasses { margin-bottom: 1.25rem; }
+.wt-muted { color: var(--wt-slate); }
+
+.wt-alert {
+  border-left: 4px solid var(--wt-garnet); background: var(--wt-garnet-soft);
+  padding: 0.75rem 1rem; color: var(--wt-ink);
+}
+.wt-alert:empty { display: none; }
+
+/* ---------- Content blocks ---------- */
+.wt-empty { padding: 2rem 0 2.5rem; border-bottom: 1px solid var(--wt-rule); margin-bottom: 2rem; }
+.wt-empty h2 { font-size: var(--wt-size-2xl); }
+.wt-panel { max-width: var(--wt-measure); }
+
+/* ---------- Glass rating (the signature) ----------
+   Each glass is two masked layers: wine (::before) and outline (::after),
+   so colours follow the theme tokens in light and dark mode. */
+.wt-glasses { display: inline-flex; gap: 0.15rem; align-items: flex-end; }
+.wt-glass {
+  position: relative; display: inline-block;
+  width: var(--wt-glass-w, 1.1rem); height: calc(var(--wt-glass-w, 1.1rem) * 1.375);
+}
+.wt-glasses--lg { --wt-glass-w: 1.75rem; gap: 0.3rem; }
+.wt-glasses--sm { --wt-glass-w: 0.85rem; }
+.wt-glass::before, .wt-glass::after {
+  content: ""; position: absolute; inset: 0;
+  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+  -webkit-mask-size: 100% 100%; mask-size: 100% 100%;
+}
+.wt-glass::after {
+  background: var(--wt-glass-line);
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 33'%3E%3Cpath d='M5 2h14c0 9.5-2.2 14.6-7 15.4C7.2 16.6 5 11.5 5 2z' fill='none' stroke='%23000' stroke-width='1.6' stroke-linejoin='round'/%3E%3Cpath d='M11.2 17h1.6v11h-1.6z M6.5 28h11v1.6h-11z'/%3E%3C/svg%3E");
+          mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 33'%3E%3Cpath d='M5 2h14c0 9.5-2.2 14.6-7 15.4C7.2 16.6 5 11.5 5 2z' fill='none' stroke='%23000' stroke-width='1.6' stroke-linejoin='round'/%3E%3Cpath d='M11.2 17h1.6v11h-1.6z M6.5 28h11v1.6h-11z'/%3E%3C/svg%3E");
+}
+.wt-glass--full::before {
+  background: var(--wt-wine);
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 33'%3E%3Cpath d='M5.9 6.5h12.2c-.6 6.4-2.6 9.6-6.1 10.2-3.5-.6-5.5-3.8-6.1-10.2z'/%3E%3C/svg%3E");
+          mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 33'%3E%3Cpath d='M5.9 6.5h12.2c-.6 6.4-2.6 9.6-6.1 10.2-3.5-.6-5.5-3.8-6.1-10.2z'/%3E%3C/svg%3E");
+}
+.wt-glass--half::before {
+  background: var(--wt-wine);
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 33'%3E%3Cpath d='M7.3 12.2h9.4c-1 2.7-2.6 4.1-4.7 4.5-2.1-.4-3.7-1.8-4.7-4.5z'/%3E%3C/svg%3E");
+          mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 33'%3E%3Cpath d='M7.3 12.2h9.4c-1 2.7-2.6 4.1-4.7 4.5-2.1-.4-3.7-1.8-4.7-4.5z'/%3E%3C/svg%3E");
+}
+.wt-rating-score {
+  font-family: var(--wt-font-label); font-size: var(--wt-size-2xl);
+  margin-left: 0.75rem; font-variant-numeric: tabular-nums;
+}
+.wt-rating-line { display: flex; align-items: flex-end; margin: 1rem 0 0.5rem; }
+
+@media (forced-colors: active) {
+  .wt-glass::after, .wt-glass--full::before, .wt-glass--half::before { background: CanvasText; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+}
