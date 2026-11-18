@@ -51,6 +51,20 @@ THEME = {
 }
 
 NAV_ITEMS = [("/", "nav.cellar"), ("/you", "nav.you")]  # Occasions/Friends arrive in phases 3-4
+# Pages that belong to the Cellar section, so its tab stays highlighted there.
+CELLAR_PREFIXES = ("/wines/", "/bottles/", "/add-wine")
+
+# Month and day names in the date pickers (DMC uses dayjs; the locale registers itself).
+# The locale file registers on the global dayjs, so the core must load first.
+DAYJS_LOCALES = [
+    "https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.10/dayjs.min.js",
+    "https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.10/locale/pt-br.min.js",
+]
+
+
+def nav_section(pathname: str | None) -> str:
+    path = pathname or "/"
+    return "/" if path.startswith(CELLAR_PREFIXES) else path
 
 
 def create_dash_app() -> dash.Dash:
@@ -61,6 +75,7 @@ def create_dash_app() -> dash.Dash:
         pages_folder=str(_HERE / "pages"),
         assets_folder=str(_HERE / "assets"),
         external_stylesheets=[FONTS],
+        external_scripts=DAYJS_LOCALES,
         title="WineTracker",
         update_title=None,
         suppress_callback_exceptions=True,
@@ -114,7 +129,13 @@ def _layout() -> dmc.MantineProvider:
                         id="wt-nav", className="wt-nav", **{"aria-label": t("nav.main", locale)}
                     ),
                     html.Main(
-                        dash.page_container, id="wt-main", className="wt-main", tabIndex="-1"
+                        dmc.DatesProvider(
+                            dash.page_container,
+                            settings={"locale": "pt-br" if locale.value == "pt-BR" else "en"},
+                        ),
+                        id="wt-main",
+                        className="wt-main",
+                        tabIndex="-1",
                     ),
                 ],
             ),
@@ -132,16 +153,17 @@ def _register_callbacks(app: dash.Dash) -> None:
     )
     def _nav(pathname: str | None, locale: str):  # type: ignore[no-untyped-def]
         public = (pathname or "/") in PUBLIC_PATHS or web_session.current_user() is None
+        section = nav_section(pathname)
         links = [
             dcc.Link(
                 [t(key, locale)]
                 + (
                     [html.Span(f" ({t('nav.current', locale)})", className="wt-sr-only")]
-                    if href == pathname
+                    if href == section
                     else []
                 ),
                 href=href,
-                className="is-current" if href == pathname else None,
+                className="is-current" if href == section else None,
             )
             for href, key in NAV_ITEMS
         ]

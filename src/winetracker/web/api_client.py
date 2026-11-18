@@ -87,6 +87,24 @@ def me() -> dict[str, Any]:
     return _request("GET", "/api/v1/auth/me", auth=True).json()
 
 
+# ----- Authenticated JSON helpers used by the cellar pages -----
+def get(path: str, **params: Any) -> Any:
+    clean = {k: v for k, v in params.items() if v is not None and v != ""}
+    return _request("GET", f"/api/v1{path}", auth=True, params=clean).json()
+
+
+def post(path: str, body: dict[str, Any]) -> Any:
+    return _request("POST", f"/api/v1{path}", auth=True, json=body).json()
+
+
+def put(path: str, body: dict[str, Any]) -> Any:
+    return _request("PUT", f"/api/v1{path}", auth=True, json=body).json()
+
+
+def delete(path: str) -> None:
+    _request("DELETE", f"/api/v1{path}", auth=True)
+
+
 def logout() -> None:
     token = session.get("refresh_token")
     if token:

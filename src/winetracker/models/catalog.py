@@ -79,6 +79,8 @@ class Wine(IdMixin, TimestampMixin, Base):
     region_id: Mapped[int | None] = mapped_column(
         BigID, ForeignKey("regions.id", ondelete="SET NULL"), index=True
     )
+    # Stored on the wine so "a Portuguese red" works without picking a region.
+    country_code: Mapped[str | None] = mapped_column(String(2), index=True)
     wine_type: Mapped[WineType] = mapped_column(str_enum(WineType, "wine_type"), nullable=False)
     general_notes: Mapped[str | None] = mapped_column(Text)
     # Rating in half-points (0..20 ⇒ 0..10 glasses). See domain.rating.Rating.

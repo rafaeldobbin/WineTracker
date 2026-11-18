@@ -48,8 +48,8 @@ Mobile (later)┘
 
 ## Roadmap
 
-1. **Foundation** — repo, config, DB layer, full schema + migration, email/password auth, Dash shell, i18n, glass rating component, CI.
-2. **Cellar** — wines, bottles, lookups, search/filter, bulk add.
+1. ✅ **Foundation** — repo, config, DB layer, full schema + migration, email/password auth, Dash shell, i18n, glass rating component, CI.
+2. ✅ **Cellar** — wines (blends, producer/region/country), bottles (bulk add, status, drinking window, store, location), seeded grapes/regions, search and filters, grouped bottle table.
 3. **Occasions & ratings** — "open a bottle" flow, history, perception-vs-experience view.
 4. **Friends** — invitations, requests, visibility rules, friends feed, Google/Apple sign-in.
 5. **Polish** — dashboard/stats, PWA install, accessibility audit (axe).
